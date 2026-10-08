@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satoki — Personal AI Assistant</title>
+<meta name="description" content="Satoki, asisten pribadi digital yang mengatur kalender, jadwal Liga Eropa & F1, dengan Human-in-the-Loop.">
+<style>
+:root{--bg:#0a0e14;--panel:#111826;--panel2:#162033;--line:#22304a;--text:#e6edf7;--muted:#8a99b3;--accent:#22d3ee;--accent2:#6366f1;--bad:#f87171;--good:#34d399}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;
+background-image:linear-gradient(rgba(34,211,238,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.04) 1px,transparent 1px);background-size:40px 40px}
+section{max-width:1000px;margin:0 auto;padding:64px 20px}
+h2{font-size:clamp(1.5rem,4vw,2rem);text-align:center;margin-bottom:8px}
+.sub{text-align:center;color:var(--muted);margin-bottom:36px}
+.grad{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* HERO */
+.hero{text-align:center;padding-top:88px}
+.avatar{width:96px;height:96px;margin:0 auto 20px;border-radius:50%;display:grid;place-items:center;font-size:2.8rem;
+background:radial-gradient(circle at 30% 30%,var(--accent2),var(--panel));border:2px solid var(--accent);box-shadow:0 0 32px rgba(34,211,238,.45);animation:float 4s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px)}}
+.badge{display:inline-block;padding:6px 16px;border-radius:999px;font-size:.85rem;font-weight:600;color:var(--good);
+background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.4)}50%{box-shadow:0 0 0 10px rgba(52,211,153,0)}}
+.hero h1{font-size:clamp(2.6rem,9vw,4.5rem);margin:18px 0 10px;letter-spacing:-1px}
+.hero p{max-width:620px;margin:0 auto 28px;color:var(--muted);font-size:1.1rem}
+.btn{display:inline-block;padding:13px 28px;border-radius:10px;font-weight:700;text-decoration:none;color:#04121a;
+background:linear-gradient(90deg,var(--accent),#67e8f9);transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(34,211,238,.45)}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);margin-left:8px}
+
+/* PROBLEM vs SOLUTION */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px}
+.card h3{margin-bottom:14px;font-size:1.2rem}
+.chaos{border-color:rgba(248,113,113,.4)}
+.chaos h3{color:var(--bad)}
+.solution{border-color:rgba(52,211,153,.4)}
+.solution h3{color:var(--good)}
+.card ul{list-style:none}
+.card li{padding:10px 0;border-bottom:1px dashed var(--line);color:#c5d0e3}
+.card li:last-child{border:0}
+
+/* CAPABILITIES */
+.caps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+.cap{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;transition:transform .25s,border-color .25s,box-shadow .25s}
+.cap:hover{transform:translateY(-6px);border-color:var(--accent);box-shadow:0 10px 30px rgba(34,211,238,.15)}
+.cap .ico{font-size:2rem;margin-bottom:12px}
+.cap h3{margin-bottom:6px}
+.cap p{color:var(--muted);font-size:.95rem}
+.tag{display:inline-block;margin-top:12px;padding:3px 10px;font-size:.75rem;border-radius:6px;color:var(--accent);background:rgba(34,211,238,.1)}
+
+/* SIMULATION */
+.sim{max-width:640px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 0 40px rgba(99,102,241,.12)}
+.sim-head{padding:14px 18px;background:var(--panel2);border-bottom:1px solid var(--line);font-weight:600;display:flex;gap:10px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--good)}
+.chat{height:300px;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+.chat:empty::before{content:"Pilih skenario di bawah untuk melihat Satoki beraksi 👇";color:var(--muted);margin:auto;text-align:center}
+.msg{max-width:85%;padding:11px 15px;border-radius:14px;font-size:.95rem;animation:pop .35s ease}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}}
+.msg.user{align-self:flex-end;background:linear-gradient(90deg,var(--accent2),#818cf8);color:#fff;border-bottom-right-radius:4px}
+.msg.bot{align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg.bot b{color:var(--accent)}
+.hitl{display:inline-block;margin-top:8px;padding:3px 10px;border-radius:6px;font-size:.78rem;font-weight:600;color:#fbbf24;background:rgba(251,191,36,.12)}
+.typing{display:flex;gap:5px;padding:14px 16px}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.scn{display:flex;flex-wrap:wrap;gap:10px;padding:14px 18px;border-top:1px solid var(--line);background:var(--panel2)}
+.sc{flex:1 1 150px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:.9rem;cursor:pointer;transition:.2s}
+.sc:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.sc:disabled{opacity:.45;cursor:not-allowed}
+.note{text-align:center;color:var(--muted);font-size:.8rem;margin-top:12px}
+
+/* FOOTER */
+footer{text-align:center;padding:64px 20px 40px;border-top:1px solid var(--line);background:linear-gradient(180deg,transparent,rgba(34,211,238,.05))}
+footer h2{margin-bottom:10px}
+footer p.sub{margin-bottom:24px}
+.btn.big{font-size:1.1rem;padding:16px 38px;box-shadow:0 0 28px rgba(34,211,238,.4)}
+.credit{margin-top:40px;color:var(--muted);font-size:.85rem}
+
+@media(max-width:700px){
+  .compare{grid-template-columns:1fr}
+  section{padding:48px 16px}
+  .btn.ghost{margin:10px 0 0}
+}
+</style>
+</head>
+<body>
+
+<!-- 1. HERO -->
+<section class="hero">
+  <div class="avatar">🤖</div>
+  <span class="badge">🟢 Status: Active &amp; Ready 24/7</span>
+  <h1 class="grad">Satoki</h1>
+  <p>Asisten pribadi digital yang mengatur kalendermu, menyiapkan jadwal Liga Eropa &amp; F1, dan selalu minta persetujuanmu sebelum mengirim pesan.</p>
+  <a class="btn" href="#demo">Coba Simulasi ↓</a>
+  <a class="btn ghost" href="https://wa.me/6281287282084" target="_blank" rel="noopener">Hubungi Saya</a>
+</section>
+
+<!-- 2. PROBLEM & SOLUTION -->
+<section>
+  <h2>Dari <span class="grad">Chaos</span> ke Solusi</h2>
+  <p class="sub">Masalah harian yang diselesaikan Satoki.</p>
+  <div class="compare">
+    <div class="card chaos">
+      <h3>😵 The Chaos</h3>
+      <ul>
+        <li>Jadwal bentrok &amp; agenda penting terlewat</li>
+        <li>Ketinggalan jadwal Liga Eropa &amp; balapan F1 karena beda zona waktu</li>
+        <li>Takut pesan otomatis terkirim salah ke orang yang salah</li>
+      </ul>
+    </div>
+    <div class="card solution">
+      <h3>✅ The Solution</h3>
+      <ul>
+        <li>Kalender tertata otomatis &amp; tersinkron ke Google Calendar</li>
+        <li>Jadwal Liga Eropa &amp; F1 siap dilihat, lengkap dengan reminder</li>
+        <li>Human-in-the-Loop: Satoki menyusun draft, kamu yang approve dulu</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 3. CORE CAPABILITIES -->
+<section>
+  <h2>Core <span class="grad">Capabilities</span></h2>
+  <p class="sub">Tiga kemampuan utama Satoki.</p>
+  <div class="caps">
+    <div class="cap">
+      <div class="ico">📅</div>
+      <h3>Smart Calendar</h3>
+      <p>Mengatur, mengecek slot kosong, dan menambah event langsung ke Google Calendar.</p>
+      <span class="tag">Google Calendar Sync</span>
+    </div>
+    <div class="cap">
+      <div class="ico">⚽🏎️</div>
+      <h3>Sports Schedule</h3>
+      <p>Memberi jadwal Liga Eropa dan F1 dalam waktu lokal, siap ditambahkan ke kalender.</p>
+      <span class="tag">Liga Eropa · Formula 1</span>
+    </div>
+    <div class="cap">
+      <div class="ico">✋</div>
+      <h3>Human-in-the-Loop</h3>
+      <p>Setiap pesan dan aksi penting menunggu persetujuanmu sebelum dikirim.</p>
+      <span class="tag">Approval Required</span>
+    </div>
+  </div>
+</section>
+
+<!-- 4. INTERACTIVE SIMULATION -->
+<section id="demo">
+  <h2>Interactive <span class="grad">Simulation</span></h2>
+  <p class="sub">Klik salah satu skenario dan lihat Satoki bekerja.</p>
+  <div class="sim">
+    <div class="sim-head"><span class="dot"></span> Satoki · Online</div>
+    <div class="chat" id="chat"></div>
+    <div class="scn">
+      <button class="sc" data-s="meeting">📅 Atur meeting</button>
+      <button class="sc" data-s="liga">⚽ Jadwal Liga Eropa</button>
+      <button class="sc" data-s="f1">🏎️ Jadwal F1</button>
+    </div>
+  </div>
+  <p class="note">Simulasi demo · isi percakapan bersifat ilustrasi</p>
+</section>
+
+<!-- 5. FOOTER & CTA -->
+<footer>
+  <h2>Mau punya <span class="grad">asisten digital</span> seperti Satoki?</h2>
+  <p class="sub">Ngobrol langsung yuk, kita diskusikan idenya.</p>
+  <a class="btn big" href="https://wa.me/6281287282084" target="_blank" rel="noopener">💬 Chat via WhatsApp</a>
+  <p class="credit">Built with AI · AI Builder Bootcamp Showcase</p>
+</footer>
+
+<script>
+const scenarios = {
+  meeting: {
+    user: "Satoki, tolong atur meeting dengan Pak Budi besok jam 10 pagi.",
+    bot: "Slot besok <b>10:00–11:00</b> masih kosong ✅<br>Event sudah kusiapkan di <b>Google Calendar</b>, plus draft pesan WhatsApp untuk Pak Budi.<br><span class='hitl'>✋ Menunggu approval kamu sebelum pesan dikirim</span>"
+  },
+  liga: {
+    user: "Kasih jadwal Liga Eropa pekan ini dong.",
+    bot: "Siap! Jadwal terbaru sudah kutarik dan kukonversi ke <b>WIB</b> 🕐<br>Pertandingan dini hari kutandai khusus supaya tidak terlewat.<br>Mau kutambahkan match pilihanmu ke Google Calendar dengan reminder 30 menit sebelumnya?<br><span class='hitl'>✋ Balas "Ya" untuk menyetujui</span>"
+  },
+  f1: {
+    user: "Kapan race F1 berikutnya?",
+    bot: "Race weekend berikutnya sudah kucek 🏎️<br>Sesi <b>Practice, Qualifying, dan Race</b> kukonversi ke <b>WIB</b>.<br>Mau kutambahkan Qualifying &amp; Race ke Google Calendar?<br><span class='hitl'>✋ Menunggu persetujuanmu</span>"
+  }
+};
+
+const chat = document.getElementById('chat');
+const buttons = document.querySelectorAll('.sc');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function addMsg(cls, html) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + cls;
+  d.innerHTML = html;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+  return d;
+}
+
+async function run(key) {
+  buttons.forEach(b => b.disabled = true);
+  chat.innerHTML = '';
+  const s = scenarios[key];
+  addMsg('user', s.user);
+  await sleep(500);
+  const t = addMsg('bot typing', '<span></span><span></span><span></span>');
+  await sleep(1600);
+  t.remove();
+  addMsg('bot', s.bot);
+  buttons.forEach(b => b.disabled = false);
+}
+
+buttons.forEach(b => b.addEventListener('click', () => run(b.dataset.s)));
+</script>
+</body>
+</html>
