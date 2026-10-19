@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Satoki — Personal AI Assistant</title>
-<meta name="description" content="Satoki, asisten pribadi digital yang mengatur kalender, jadwal Liga Eropa & F1, dengan Human-in-the-Loop.">
+<meta name="description" content="Satoki, asisten pribadi digital: atur kalender, jadwal Liga Eropa & F1, rekomendasi tempat murah, dengan Human-in-the-Loop.">
 <style>
 :root{--bg:#0a0e14;--panel:#111826;--panel2:#162033;--line:#22304a;--text:#e6edf7;--muted:#8a99b3;--accent:#22d3ee;--accent2:#6366f1;--bad:#f87171;--good:#34d399}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -25,7 +25,7 @@ background:radial-gradient(circle at 30% 30%,var(--accent2),var(--panel));border
 background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.4)}50%{box-shadow:0 0 0 10px rgba(52,211,153,0)}}
 .hero h1{font-size:clamp(2.6rem,9vw,4.5rem);margin:18px 0 10px;letter-spacing:-1px}
-.hero p{max-width:620px;margin:0 auto 28px;color:var(--muted);font-size:1.1rem}
+.hero p{max-width:640px;margin:0 auto 28px;color:var(--muted);font-size:1.1rem}
 .btn{display:inline-block;padding:13px 28px;border-radius:10px;font-weight:700;text-decoration:none;color:#04121a;
 background:linear-gradient(90deg,var(--accent),#67e8f9);transition:transform .2s,box-shadow .2s}
 .btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(34,211,238,.45)}
@@ -56,13 +56,18 @@ background:linear-gradient(90deg,var(--accent),#67e8f9);transition:transform .2s
 .sim{max-width:640px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 0 40px rgba(99,102,241,.12)}
 .sim-head{padding:14px 18px;background:var(--panel2);border-bottom:1px solid var(--line);font-weight:600;display:flex;gap:10px;align-items:center}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--good)}
-.chat{height:300px;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+.chat{height:320px;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
 .chat:empty::before{content:"Pilih skenario di bawah untuk melihat Satoki beraksi 👇";color:var(--muted);margin:auto;text-align:center}
-.msg{max-width:85%;padding:11px 15px;border-radius:14px;font-size:.95rem;animation:pop .35s ease}
+.msg{max-width:90%;padding:11px 15px;border-radius:14px;font-size:.95rem;animation:pop .35s ease}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}}
 .msg.user{align-self:flex-end;background:linear-gradient(90deg,var(--accent2),#818cf8);color:#fff;border-bottom-right-radius:4px}
 .msg.bot{align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:4px}
 .msg.bot b{color:var(--accent)}
+.msg a{color:var(--accent)}
+.pl{list-style:none;margin:8px 0}
+.pl li{padding:7px 0;border-bottom:1px dashed var(--line)}
+.pl li:last-child{border:0}
+.pl small{color:var(--muted)}
 .hitl{display:inline-block;margin-top:8px;padding:3px 10px;border-radius:6px;font-size:.78rem;font-weight:600;color:#fbbf24;background:rgba(251,191,36,.12)}
 .typing{display:flex;gap:5px;padding:14px 16px}
 .typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
@@ -96,7 +101,7 @@ footer p.sub{margin-bottom:24px}
   <div class="avatar">🤖</div>
   <span class="badge">🟢 Status: Active &amp; Ready 24/7</span>
   <h1 class="grad">Satoki</h1>
-  <p>Asisten pribadi digital yang mengatur kalendermu, menyiapkan jadwal Liga Eropa &amp; F1, dan selalu minta persetujuanmu sebelum mengirim pesan.</p>
+  <p>Asisten pribadi digital yang mengatur kalendermu, menyiapkan jadwal Liga Eropa &amp; F1, merekomendasikan tempat nongkrong murah, dan selalu minta persetujuanmu sebelum mengirim pesan.</p>
   <a class="btn" href="#demo">Coba Simulasi ↓</a>
   <a class="btn ghost" href="https://wa.me/6281287282084" target="_blank" rel="noopener">Hubungi Saya</a>
 </section>
@@ -111,6 +116,7 @@ footer p.sub{margin-bottom:24px}
       <ul>
         <li>Jadwal bentrok &amp; agenda penting terlewat</li>
         <li>Ketinggalan jadwal Liga Eropa &amp; balapan F1 karena beda zona waktu</li>
+        <li>Bingung cari tempat nongkrong murah dengan rating bagus</li>
         <li>Takut pesan otomatis terkirim salah ke orang yang salah</li>
       </ul>
     </div>
@@ -119,6 +125,7 @@ footer p.sub{margin-bottom:24px}
       <ul>
         <li>Kalender tertata otomatis &amp; tersinkron ke Google Calendar</li>
         <li>Jadwal Liga Eropa &amp; F1 siap dilihat, lengkap dengan reminder</li>
+        <li>Rekomendasi tempat murah berating tinggi dari database Supabase</li>
         <li>Human-in-the-Loop: Satoki menyusun draft, kamu yang approve dulu</li>
       </ul>
     </div>
@@ -128,12 +135,12 @@ footer p.sub{margin-bottom:24px}
 <!-- 3. CORE CAPABILITIES -->
 <section>
   <h2>Core <span class="grad">Capabilities</span></h2>
-  <p class="sub">Tiga kemampuan utama Satoki.</p>
+  <p class="sub">Tiga kemampuan utama Satoki, semuanya dengan Human-in-the-Loop.</p>
   <div class="caps">
     <div class="cap">
       <div class="ico">📅</div>
       <h3>Smart Calendar</h3>
-      <p>Mengatur, mengecek slot kosong, dan menambah event langsung ke Google Calendar.</p>
+      <p>Mengatur, mengecek slot kosong, dan menambah event ke Google Calendar. Pesan terkirim hanya setelah kamu approve.</p>
       <span class="tag">Google Calendar Sync</span>
     </div>
     <div class="cap">
@@ -143,10 +150,10 @@ footer p.sub{margin-bottom:24px}
       <span class="tag">Liga Eropa · Formula 1</span>
     </div>
     <div class="cap">
-      <div class="ico">✋</div>
-      <h3>Human-in-the-Loop</h3>
-      <p>Setiap pesan dan aksi penting menunggu persetujuanmu sebelum dikirim.</p>
-      <span class="tag">Approval Required</span>
+      <div class="ico">☕</div>
+      <h3>Place Finder</h3>
+      <p>Merekomendasikan coffee shop, burjo, dan warkop murah di Semarang dari data Google Maps.</p>
+      <span class="tag">Apify · n8n · Supabase</span>
     </div>
   </div>
 </section>
@@ -160,11 +167,11 @@ footer p.sub{margin-bottom:24px}
     <div class="chat" id="chat"></div>
     <div class="scn">
       <button class="sc" data-s="meeting">📅 Atur meeting</button>
-      <button class="sc" data-s="liga">⚽ Jadwal Liga Eropa</button>
-      <button class="sc" data-s="f1">🏎️ Jadwal F1</button>
+      <button class="sc" data-s="sports">⚽🏎️ Jadwal Liga Eropa &amp; F1</button>
+      <button class="sc" data-s="places">☕ Cari tempat murah</button>
     </div>
   </div>
-  <p class="note">Simulasi demo · isi percakapan bersifat ilustrasi</p>
+  <p class="note">Skenario meeting &amp; jadwal adalah ilustrasi · skenario tempat membaca data live dari Supabase</p>
 </section>
 
 <!-- 5. FOOTER & CTA -->
@@ -176,18 +183,48 @@ footer p.sub{margin-bottom:24px}
 </footer>
 
 <script>
+// ===== Konfigurasi Supabase (pakai ANON public key, JANGAN service_role) =====
+const SUPABASE_URL = 'https://mpcpaisormkqivbyxxye.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_rG0RlFhSe44ane2le71lkg_CHiROokO'; // isi dari Supabase → Project Settings → API → anon public
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+async function fetchPlaces() {
+  if (!SUPABASE_ANON_KEY) throw new Error('anon key kosong');
+  const q = '/rest/v1/places?select=title,total_score,reviews_count,street,url&total_score=not.is.null&order=total_score.desc&limit=3';
+  const r = await fetch(SUPABASE_URL + q, {
+    headers: { apikey: SUPABASE_ANON_KEY }
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+async function placesReply() {
+  try {
+    const d = await fetchPlaces();
+    if (!d.length) return "Database tempat masih kosong 📭<br>Jalankan workflow n8n dulu supaya data Google Maps masuk ke Supabase.";
+    const items = d.map(p => {
+      const link = p.url && /^https:\/\//.test(p.url) ? ` · <a href="${esc(p.url)}" target="_blank" rel="noopener">Lihat di Maps</a>` : '';
+      return `<li><b>${esc(p.title)}</b> ⭐ ${esc(p.total_score)} (${esc(p.reviews_count ?? 0)} ulasan)<br><small>${esc(p.street || 'Semarang')}</small>${link}</li>`;
+    }).join('');
+    return `Ini 3 tempat murah berating tertinggi dari database-ku ☕<ul class="pl">${items}</ul>Mau kujadwalkan nongkrong ke Google Calendar?<br><span class="hitl">✋ Menunggu approval kamu</span>`;
+  } catch (e) {
+    return "Koneksi ke database Supabase belum aktif 🔌<br>Pastikan <b>SUPABASE_ANON_KEY</b> sudah diisi dan akses baca tabel <b>places</b> sudah diizinkan.";
+  }
+}
+
 const scenarios = {
   meeting: {
     user: "Satoki, tolong atur meeting dengan Pak Budi besok jam 10 pagi.",
     bot: "Slot besok <b>10:00–11:00</b> masih kosong ✅<br>Event sudah kusiapkan di <b>Google Calendar</b>, plus draft pesan WhatsApp untuk Pak Budi.<br><span class='hitl'>✋ Menunggu approval kamu sebelum pesan dikirim</span>"
   },
-  liga: {
-    user: "Kasih jadwal Liga Eropa pekan ini dong.",
-    bot: "Siap! Jadwal terbaru sudah kutarik dan kukonversi ke <b>WIB</b> 🕐<br>Pertandingan dini hari kutandai khusus supaya tidak terlewat.<br>Mau kutambahkan match pilihanmu ke Google Calendar dengan reminder 30 menit sebelumnya?<br><span class='hitl'>✋ Balas "Ya" untuk menyetujui</span>"
+  sports: {
+    user: "Kasih jadwal Liga Eropa dan F1 dong.",
+    bot: "Siap! Jadwal terbaru <b>Liga Eropa</b> dan <b>F1</b> sudah kutarik dan kukonversi ke <b>WIB</b> 🕐<br>Pertandingan dini hari dan sesi Qualifying &amp; Race kutandai khusus supaya tidak terlewat.<br>Mau kutambahkan ke Google Calendar dengan reminder 30 menit sebelumnya?<br><span class='hitl'>✋ Balas “Ya” untuk menyetujui</span>"
   },
-  f1: {
-    user: "Kapan race F1 berikutnya?",
-    bot: "Race weekend berikutnya sudah kucek 🏎️<br>Sesi <b>Practice, Qualifying, dan Race</b> kukonversi ke <b>WIB</b>.<br>Mau kutambahkan Qualifying &amp; Race ke Google Calendar?<br><span class='hitl'>✋ Menunggu persetujuanmu</span>"
+  places: {
+    user: "Satoki, cariin tempat nongkrong murah di Semarang dong.",
+    bot: placesReply
   }
 };
 
@@ -208,12 +245,15 @@ async function run(key) {
   buttons.forEach(b => b.disabled = true);
   chat.innerHTML = '';
   const s = scenarios[key];
-  addMsg('user', s.user);
+  addMsg('user', esc(s.user));
   await sleep(500);
   const t = addMsg('bot typing', '<span></span><span></span><span></span>');
-  await sleep(1600);
+  const [reply] = await Promise.all([
+    typeof s.bot === 'function' ? s.bot() : Promise.resolve(s.bot),
+    sleep(1600)
+  ]);
   t.remove();
-  addMsg('bot', s.bot);
+  addMsg('bot', reply);
   buttons.forEach(b => b.disabled = false);
 }
 
