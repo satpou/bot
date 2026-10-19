@@ -191,7 +191,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 
 async function fetchPlaces() {
   if (!SUPABASE_ANON_KEY) throw new Error('anon key kosong');
-  const q = '/rest/v1/places?select=title,total_score,reviews_count,street,url&total_score=not.is.null&order=total_score.desc&limit=3';
+  const q = '/rest/v1/places?select=title,total_score,reviews_count,street,url&reviews_count=gte.20&order=total_score.desc,reviews_count.desc&limit=3';
   const r = await fetch(SUPABASE_URL + q, {
     headers: { apikey: SUPABASE_ANON_KEY }
   });
